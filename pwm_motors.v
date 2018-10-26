@@ -9,10 +9,10 @@
 
 `timescale 1ns / 1ps
 
-module pwm(
+module pwm_motors(
 	input clk,
-    input [5:0] duty, // was PWMRate
-	output reg PWM_output = 0 // was PWMOut
+    input [5:0] duty,
+	output reg PWM_output = 0
 );
      // 6-bit counter can count up to 64
     reg [5:0] count = 0;
