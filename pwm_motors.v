@@ -11,11 +11,11 @@
 
 module pwm_motors(
 	input clk,
-    input [5:0] duty,
+	input [5:0] duty,
 	output reg PWM_output = 0
 );
-     // 6-bit counter can count up to 64
-    reg [5:0] count = 0;
+	// 6-bit counter can count up to 64
+	reg [5:0] count = 0;
 	always@(posedge clk)
 	begin
 		count <= count + 1;
