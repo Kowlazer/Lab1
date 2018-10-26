@@ -9,7 +9,7 @@
 
 `timescale 1ns / 1ps
 
-module pwm_motors(
+module motors_pwm(
 	input clk,
 	input [5:0] duty,
 	output reg PWM_output = 0
