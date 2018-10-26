@@ -1,5 +1,5 @@
-// Pulse Width Modulation (PWM) Signal Generator
 //////////////////////////////////////////////////////////////////////////////////
+// Pulse Width Modulation (PWM) Signal Generator:
 // Simple module generates a PWM signal using a counter and a comparator. 6-bit
 // counter counts positive edges of the clock until it passes the maximum, then
 // alternates. The duty cycle in percentage is the duty given / max of the
