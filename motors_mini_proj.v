@@ -5,7 +5,7 @@
 
 `timescale 1ns / 1ps
 
-module mini_proj(
+module motors_mini_proj(
     input clk,
     input [7:0] sw,
     output LeftPWMOut,
@@ -17,7 +17,7 @@ module mini_proj(
     assign speed = sw[5:0];
     
     // module instantiation
-    pwm_motors(
+    motors_pwm(
         .duty(speed),
         .clk(clk),
         .PWM_output(LeftPWMOut),
