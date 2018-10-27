@@ -10,49 +10,59 @@
 
 module mealy(
      input clk,
-     input [2:0] color,
      input IRS,
      input IPS,
-     output reg out, // IDK what this is yet...
+     input [3:0] CS,
+     input [2:0] Sense,
+     output reg out, // ?
      output reg enable_searching = 0
      );
      
-     wire [4:0] inputs; // bus to combine all 3 input sources
-     assign inputs = {IRS, IPS, color[2], color[1], color[0]};
+     wire [7:0] inputs; // input bus
+     assign inputs = {IRS, IPS, CS[3], CS[2], CS[1], Sense[2], Sense[1]}; // *** should I change so index starts at 0 not 1? 
      
      // Define states as parameters
-     parameter S_Search = 0,    // Search field for washer.     Need to use: IRS, H-bridge (& pwm module), IPS, servo(s).
-               S_Avoid = 1,     // Avoid obstacle.              Need to use:
-               S_Grab = 2,      // Pick the washer up.          Need to use: E-mag, servo(s).
-               S_Color = 3,     // Determine washer color.      Need to use: color sensor, maybe backlight. (Scan multiple times - if no color is found washer is dropped and needs to go back to S_Search)
-               S_Corner = 4,    // Find correct corner LED.     Need to use: IRS, H-bridge (& pwm module), phototransistor (need to figure out mounting and if it needs a servo).
-               S_Drop = 5,      // Drop the washer off.         Need to use: Servo(s), E-mag?
-               S_Stalled = 6;   // Motors have stalled.         Need to use:
+     parameter S_Search = 0,    // Inputs: IRS, IPS, SenseA/B         Outputs: H-bridge, Servos
+               S_Avoid = 1,     // Inputs:                            Outputs:
+               S_Grab = 2,      // Inputs: Emag,                      Outputs: Servos
+               S_Color = 3,     // Inputs: CS                         Outputs:
+               S_Corner = 4,    // Inputs: IRS, PT, SenseA/B          Outputs: H-bridge, Servos
+               S_Drop = 5,      // Inputs: Emag,                      Outputs: Servos
+               S_Stalled = 6;   // Inputs: SenseA/B                   Outputs: H-bridge
 
-
-     // Create a register for the current state, initialize it to S_Search
+     // State registers
      reg state_now = S_Search;
-     // Create a register for the next state
      reg state_next;
+     reg state_previous;
      
+     // *****
+     // *****
+     // ***** CURRENT TASK IS TO INCORPORATE SENSE A&B AS INPUTS INTO THE SEARCHING STATE *****
+     // *****
+     // *****
 
-     // Process 1: Determine next state and output
+     // Process 1: Determine next state and output (no outputs right now)
      always @ (state_now)
           case(state_now)
                S_Search:
                     casex(inputs) // dont care about color sensor bits
-                    5'b00xxx: begin // no washer found, no object detected, still searching field
+                    7'b00xxx??: begin // no washer found, no object detected, still searching field
                          state_next <= S_Search;
                          enable_searching = 1; // turns on seperate searching module
                          // have this state output enable bit that tells movement module 
                          // multiplexer needed??
                     end
-                    5'b10xxx: begin // IRS object detected
+                    7'b10xxx??: begin // IRS detected object
                          state_next <= S_Avoid;
+                         state_previous <= S_Search; // so Avoid state knows where to return to
                          enable_searching = 0; // ??
                          
                     end
-                    5'b01xxx: begin // IPS washer detected
+                    7'b01xxx??: begin // IPS detected washer
+                         state_next <= S_Grab;
+                         enable_searching = 0;
+                    end
+                    7'b11xxx??: begin // What do we want to do when both IRS & IPS are activated?
                          state_next <= S_Grab;
                          enable_searching = 0;
                     end
@@ -60,16 +70,23 @@ module mealy(
                
                S_Avoid:
                     casex(inputs) // needs a previous_state input to know where to return to
-                    5'b10xxx: begin
+                    7'b1xxxx??: begin // IRS still detects object
                          state_next <= S_Avoid;
                     end
-                    5'b00xxx: begin // needs prev_state
-                         state_next <= S_Search;
+                    7'b0xxxx??: begin // Path is clear
+                         state_next <= state_previous;
                     end
-                    5'b00xxx: begin // needs prev_state
-                         state_next <= S_Corner;
-                    end  
                     endcase
+               
+               
+               
+               
+               
+               // IGNORE THE REST OF THE STATES FOR NOW
+               
+               
+               
+               
                     
                S_Grab:
                     casex(inputs)
