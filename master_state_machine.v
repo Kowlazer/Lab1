@@ -13,7 +13,7 @@ module mealy(
      input IRS,
      input IPS,
      input [3:0] CS,
-     input [2:0] Sense,
+     input [2:0] Sense, // Sense A & B from H-Bridge
      output reg out, // ?
      output reg enable_searching = 0
      );
