@@ -88,10 +88,10 @@ module mealy(
                
                S_Avoid:
                     casex(inputs) // needs a previous_state input to know where to return to
-                    7'b1xxxx??: begin // IRS still detects object
+                    8'bxx_x_xxx_xx: begin // IRS still detects object
                          state_next <= S_Avoid;
                     end
-                    7'b0xxxx??: begin // Path is clear
+                    8'bxx_x_xxx_xx: begin // Path is clear
                          state_next <= state_previous;
                     end
                     endcase
@@ -100,7 +100,7 @@ module mealy(
                
                
                
-               // IGNORE THE REST OF THE STATES FOR NOW
+///////////////////////////////////////// IGNORE THE REST OF THE STATES FOR NOW /////////////////////////////////////////
                
                
                
