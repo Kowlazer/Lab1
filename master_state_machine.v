@@ -10,7 +10,7 @@
 
 module mealy(
      input clk,
-     input IRS,
+     input [2:0] IRS,
      input IPS,
      input [3:0] CS,
      input [2:0] Sense, // Sense A & B from H-Bridge
@@ -19,7 +19,7 @@ module mealy(
      );
      
      wire [7:0] inputs; // input bus
-     assign inputs = {IRS, IPS, CS[3], CS[2], CS[1], Sense[2], Sense[1]}; // *** should I change so index starts at 0 not 1? 
+     assign inputs = {IRS[2], IRS[1], !IPS, CS[3], CS[2], CS[1], Sense[2], Sense[1]}; // *** should I change so index starts at 0 not 1? 
      
      // Define states as parameters
      parameter S_Search = 0,    // Inputs: IRS, IPS, SenseA/B         Outputs: H-bridge, Servos
@@ -45,28 +45,46 @@ module mealy(
      always @ (state_now)
           case(state_now)
                S_Search:
-                    casex(inputs) // dont care about color sensor bits
-                    7'b00xxx??: begin // no washer found, no object detected, still searching field
+                    casex(inputs)
+                    8'b00_0_xxx_00: begin // no washer found, no object detected, still searching field
                          state_next <= S_Search;
                          enable_searching = 1; // turns on seperate searching module
-                         // have this state output enable bit that tells movement module 
-                         // multiplexer needed??
                     end
-                    7'b10xxx??: begin // IRS detected object
-                         state_next <= S_Avoid;
-                         state_previous <= S_Search; // so Avoid state knows where to return to
-                         enable_searching = 0; // ??
                          
+                         
+// Figure out how to do first two bits for IRS.. 1x & x1    or 01, 10, and 11 ???? 
+                    8'b10_0_xxx_00: begin // Left IRS triggered
+                         state_next <= S_Avoid;
+                         state_previous <= S_Search;
                     end
-                    7'b01xxx??: begin // IPS detected washer
-                         state_next <= S_Grab;
-                         enable_searching = 0;
+                    8'b01_0_xxx_00: begin // Right IRS triggered
+                         state_next <= S_Avoid;
+                         state_previous <= S_Search;
                     end
-                    7'b11xxx??: begin // What do we want to do when both IRS & IPS are activated?
+                    8'b11_0_xxx_00: begin // Both IRS triggered
+                         state_next <= S_Avoid;
+                         state_previous <= S_Search;
+                    end
+                         
+                         
+                    8'bxx_1_xxx_00: begin // IPS detected washer
                          state_next <= S_Grab;
-                         enable_searching = 0;
+                    end
+                         
+                         
+                    8'bxx_x_xxx_1x: begin // Sense_A triggered
+                         state_next <= S_Stall;
+                         state_previous <= S_Search;
+                    end
+                    8'bxx_x_xxx_x1: begin // Sense_B triggered
+                         state_next <= S_Stall;
+                         state_previous <= S_Search;
                     end
                     endcase
+               
+               
+               
+               
                
                S_Avoid:
                     casex(inputs) // needs a previous_state input to know where to return to
