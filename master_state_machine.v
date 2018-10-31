@@ -61,7 +61,7 @@ module mealy(
                          state_next <= S_Avoid;
                          state_previous <= S_Search;
                     end
-                    8'b11_0_xxx_00: begin // Both IRS triggered
+                    8'b11_0_xxx_00: begin // Both IRS triggered - RARE!!!
                          state_next <= S_Avoid;
                          state_previous <= S_Search;
                     end
