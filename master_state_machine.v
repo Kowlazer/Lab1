@@ -49,7 +49,7 @@ module mealy(
                          enable_search = 1; // turns on seperate searching module
                     end
                          
-                         
+////////// Figure out where to use x and where to use 0 to account for all possible cases                         
 ////////// Figure out how to do first two bits for IRS.. 1x & x1    or 01, 10, and 11 ???? 
                     8'b10_00_0_xxx: begin // Left IRS triggered
                          state_next <= S_Avoid;
@@ -61,15 +61,14 @@ module mealy(
                          state_next <= S_Avoid;
                     end
                          
-                         
-                    8'bxx_xx_1_xxx: begin // IPS triggered
-                         state_next <= S_Grab;
-                    end
                     8'bxx_1x_x_xxx: begin // Sense_A triggered
                          state_next <= S_Stall;
                     end
                     8'bxx_x1_x_xxx: begin // Sense_B triggered
                          state_next <= S_Stall;
+                    end
+                    8'bxx_xx_1_xxx: begin // IPS triggered
+                         state_next <= S_Grab;
                     end
                     endcase
                
