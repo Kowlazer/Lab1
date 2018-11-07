@@ -30,7 +30,7 @@ module top(
      
      
      // Process 1: Determine next state and output (no outputs right now)
-     always @ (state_now)
+     always @ (*)
           case(state_now)
                S_Search:
                     state_previous <= S_Search; // used for S_Avoid & S_Stalled
