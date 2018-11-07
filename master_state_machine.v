@@ -7,6 +7,7 @@ module top(
      input [1:0] Sense,
      input IPS,
      input [2:0] CS,
+     // add??: input PT, 
      output reg enable_search = 0 // will be used to turn on seperate module
      );
      
