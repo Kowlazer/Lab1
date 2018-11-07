@@ -38,6 +38,7 @@ module top(
                     8'b00_00_0_xxx: begin // no washer found, no object detected, still searching field
                          state_next <= S_Search;
                          enable_search = 1; // turns on seperate searching module
+                         // seperate module, always @ ... if enable_search == 1 ... blah blah blah
                     end
                     8'b10_00_0_xxx: begin // Left IRS
                          state_next <= S_Avoid;
