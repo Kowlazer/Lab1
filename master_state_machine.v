@@ -39,6 +39,7 @@ module top(
                          state_next <= S_Search;
                          enable_search = 1; // turns on seperate searching module
                          // seperate module, always @ ... if enable_search == 1 ... blah blah blah
+////////// This is where i'm not sure what to do
                     end
                     8'b10_00_0_xxx: begin // Left IRS
                          state_next <= S_Avoid;
